@@ -1,65 +1,182 @@
-import Image from "next/image";
+import Link from "next/link";
+import ProductCard from "@/components/shop/ProductCard";
+import ProductImage from "@/components/shop/ProductImage";
+import { categories, products } from "@/data/products";
+import { Truck, BadgePoundSterling, ShieldCheck } from "lucide-react";
 
-export default function Home() {
+const categoryEmojis: Record<string, string> = {
+  "Cardboard Boxes": "📦",
+  "Bubble Wrap": "🫧",
+  "Mailing Bags": "✉️",
+  "Printed Packaging": "🎨",
+  "Pallet Wrap": "🏭",
+  "Eco Packaging": "🌱",
+  "Postal Bags": "📮",
+  Strapping: "🧵",
+};
+
+function BigCategoryCard({
+  title,
+  product,
+  className = "",
+}: {
+  title: string;
+  product: (typeof products)[number];
+  className?: string;
+}) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <Link
+      href="/shop"
+      className={`group relative flex flex-col overflow-hidden rounded-sm  bg-transparent transition ${className}`}
+    >
+      <div className="flex flex-1 items-center justify-center p-1 ">
+        <ProductImage
+          src={product?.image}
+          alt={product?.name ?? title}
+          emoji={product?.emoji ?? "📦"}
+          className="h-full min-h-[170px] w-full max-w-md "
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+
+      <div className="absolute bottom-0 left-1/2 w-[35%] -translate-x-1/2">
+        <div className="bg-[var(--primary)] px-5 py-3 text-center text-sm font-black text-white shadow-sm transition group-hover:bg-[var(--primary-dark)]">
+          {title}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </div>
+    </Link>
+  );
+}
+
+function SmallCategoryCard({ category }: { category: string }) {
+  return (
+    <Link
+      href="/shop"
+      className="flex min-h-[115px] items-center gap-4 rounded-sm border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[var(--primary)] hover:shadow-md"
+    >
+      <span className="text-4xl">{categoryEmojis[category] ?? "📦"}</span>
+      <span className="font-black text-slate-900">{category}</span>
+    </Link>
+  );
+}
+
+export default function HomePage() {
+  const featuredProducts = products.slice(0, 5);
+
+  return (
+    <main className="bg-[#f3f5f4]">
+      {/* Hero Grid */}
+      <section className="px-4 py-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <BigCategoryCard
+              title="Cardboard Boxes"
+              product={products[0]}
+              className="min-h-[300px]"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <BigCategoryCard
+              title="Protective Packaging"
+              product={products[1]}
+              className="min-h-[300px]"
+            />
+
+            <BigCategoryCard
+              title="Mailing Bags"
+              product={products[2]}
+              className="min-h-[250px]"
+            />
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              {categories.slice(3, 7).map((category) => (
+                <SmallCategoryCard key={category} category={category} />
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Category Buttons */}
+      <section className="px-4 pb-8">
+        <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
+          {categories.map((category) => (
+            <Link
+              key={category}
+              href="/shop"
+              className="bg-slate-900 px-4 py-3 text-center text-xs font-black text-white transition hover:bg-[var(--primary)]"
+            >
+              {category}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Printed Packaging Banner */}
+      <section className="bg-[var(--primary)] px-4 py-10 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 md:flex-row">
+          <div>
+            <h1 className="text-3xl font-black md:text-4xl">
+              Need printed packaging?
+            </h1>
+
+            <p className="mt-2 text-sm font-semibold text-white/90">
+              Custom boxes, branded bags and ecommerce packaging options.
+            </p>
+          </div>
+
+          <Link
+            href="/shop"
+            className="rounded-md bg-white px-6 py-3 text-sm font-black text-[var(--primary)]"
+          >
+            View Printed Packaging
+          </Link>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section className="px-4 py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-7 text-center">
+            <h2 className="text-2xl font-black text-slate-950">
+              Featured Products
+            </h2>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Info Section */}
+      <section className="px-4 pb-12">
+        <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3">
+          <div className="rounded-sm bg-white p-6 shadow-sm">
+            <Truck className="mb-3 text-[var(--primary)]" />
+            <h3 className="font-black text-slate-950">Fast UK Delivery</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Free delivery available on orders over £75.
+            </p>
+          </div>
+
+          <div className="rounded-sm bg-white p-6 shadow-sm">
+            <BadgePoundSterling className="mb-3 text-[var(--primary)]" />
+            <h3 className="font-black text-slate-950">Volume Discounts</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Tier pricing helps customers save when buying in bulk.
+            </p>
+          </div>
+
+          <div className="rounded-sm bg-white p-6 shadow-sm">
+            <ShieldCheck className="mb-3 text-[var(--primary)]" />
+            <h3 className="font-black text-slate-950">Trade Pricing</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Trade mode shows lower pricing with minimum basket rules.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
