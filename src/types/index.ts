@@ -29,10 +29,129 @@ export type Product = {
   isFeatured: boolean;
 };
 
-export type CartItem = {
+/*
+  DYNAMIC PRODUCT TABLE TYPES
+
+  These are admin-panel-ready:
+  - each product family can have its own visible columns
+  - each product family can have its own price break columns
+  - each row stores values and prices dynamically
+*/
+
+export type DynamicColumnType = "text" | "number" | "image";
+
+export type DynamicTableColumn = {
+  id: string;
+  label: string;
+  key: string;
+  type: DynamicColumnType;
+  visible: boolean;
+  order: number;
+};
+
+export type DynamicPriceBreak = {
+  id: string;
+  label: string;
+  startsAfterQty: number;
+  order: number;
+};
+
+export type BulkOrderOption = {
+  label: string;
+  quantity: number;
+  totalUnits: number;
+};
+
+export type BulkProductRow = {
+  id: string;
+  sku: string;
+  name: string;
+  image?: string;
+  emoji: string;
+
+  /*
+    Dynamic row values.
+    Example:
+    values: {
+      material: "Co-ex polythene",
+      recycledInfo: "30% recycled content",
+      sizeInches: "4 x 6",
+      sizeMm: "102 x 152mm",
+      gauge: "55mu"
+    }
+  */
+  values: Record<string, string | number>;
+
+  packQty: number;
+  boxQty: number;
+  unitLabel: string;
+
+  /*
+    Dynamic prices.
+    Example:
+    prices: {
+      pb_1: 8.5,
+      pb_4: 7.65,
+      pb_8: 6.96,
+      trade: 5.65
+    }
+  */
+  prices: Record<string, number>;
+
+  orderOptions: BulkOrderOption[];
+};
+
+export type ProductFamily = {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  description: string;
+  image?: string;
+  isPublished: boolean;
+
+  tableColumns: DynamicTableColumn[];
+  priceBreaks: DynamicPriceBreak[];
+  rows: BulkProductRow[];
+
+  specifications?: Record<string, string>;
+};
+
+/*
+  CART TYPES
+*/
+
+export type StandardCartItem = {
+  type: "standard";
   product: Product;
   selectedVariant: ProductVariant;
   quantity: number;
+};
+
+export type BulkCartItem = {
+  type: "bulk";
+  row: BulkProductRow;
+  quantity: number;
+
+  /*
+    Important:
+    Bulk cart item carries its own priceBreaks so cart/checkout can still
+    calculate correct pricing even after leaving product detail page.
+  */
+  priceBreaks: DynamicPriceBreak[];
+};
+
+export type CartItem = StandardCartItem | BulkCartItem;
+
+export type PendingBulkOrderItem = {
+  row: BulkProductRow;
+  quantity: number;
+
+  /*
+    Temporary order summary also needs priceBreaks because it calculates
+    live totals before adding to cart.
+  */
+  priceBreaks: DynamicPriceBreak[];
 };
 
 export type CartTotals = {
